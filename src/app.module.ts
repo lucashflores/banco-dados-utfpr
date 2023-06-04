@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
-import { AppService } from './app.service';
+import { AppService } from './services/app.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { AutoridadeEnvolvida } from './entities/autoridade_envolvida.entity';
 import { Envolvido } from './entities/envolvido.entity';
@@ -12,6 +12,7 @@ import { Medicao } from './entities/medicao.entity';
 import { Infracao } from './entities/infracao.entity';
 import { Acidente } from './entities/acidente.entity';
 import { ConfigModule } from '@nestjs/config';
+import { AutoridadeEnvolvidaService } from './services/autoridade-envolvida.service';
 
 @Module({
   imports: [
@@ -53,6 +54,6 @@ import { ConfigModule } from '@nestjs/config';
     ]),
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [AppService, AutoridadeEnvolvidaService],
 })
 export class AppModule {}
