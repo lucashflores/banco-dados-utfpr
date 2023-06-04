@@ -25,39 +25,45 @@ export class AutoridadeEnvolvidaService {
   }
 
   async runScript() {
+    console.time('Removing repeated...');
     const fileData = this.readFromCsv().slice(1);
     let i = 0;
-    let promises = [];
-    for (const row of fileData) {
+    const autoridadesArr = [
+      ...new Set(
+        fileData.map((row) => {
+          const rowData = row.split(',');
+          const autoridadeEnvolvidaProps = rowData.slice(-3);
+          const autoridadeEnvolvida: Partial<AutoridadeEnvolvida> = {
+            regional: autoridadeEnvolvidaProps[0],
+            delegacia: autoridadeEnvolvidaProps[1],
+            uop: autoridadeEnvolvidaProps[2].replace('\r', ''),
+          };
+          return JSON.stringify(autoridadeEnvolvida);
+        }),
+      ),
+    ].map((autoridade) => {
+      const parsedAutoridade = JSON.parse(
+        autoridade,
+      ) as Partial<AutoridadeEnvolvida>;
+      parsedAutoridade.id = i;
+      i += 1;
+      return parsedAutoridade;
+    });
+    console.timeEnd('Removing repeated...');
+    const promises = [];
+    for (const autoridade of autoridadesArr) {
       console.time('a');
-      const rowData = row.split(',');
-      const autoridadeEnvolvidaProps = rowData.slice(-3);
-      console.log('props', autoridadeEnvolvidaProps);
-      const autoridadeEnvolvida: Partial<AutoridadeEnvolvida> = {
-        id: i,
-        regional: autoridadeEnvolvidaProps[0],
-        delegacia: autoridadeEnvolvidaProps[1],
-        uop: autoridadeEnvolvidaProps[2].replace('\r', ''),
-      };
-      console.log('item', autoridadeEnvolvida);
+
       try {
-        promises.push(this.insertData(autoridadeEnvolvida));
-        i += 1;
-        if (i % 100 == 0) {
-          console.log('Commit Result');
-          console.log(promises);
-
-          const resolvedPromises = await Promise.allSettled(promises);
-
-          console.log(resolvedPromises);
-          promises = [];
-        }
+        promises.push(this.insertData(autoridade));
       } catch (err) {
+        console.log('error');
         console.log(err.detail);
       }
       console.timeEnd('a');
     }
     console.log('Commit Result');
     await Promise.all(promises);
+    console.log('END');
   }
 }
