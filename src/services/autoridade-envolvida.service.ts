@@ -51,19 +51,17 @@ export class AutoridadeEnvolvidaService {
     });
     console.timeEnd('Removing repeated...');
     const promises = [];
+    console.time('Pushing to database...');
     for (const autoridade of autoridadesArr) {
-      console.time('a');
-
       try {
         promises.push(this.insertData(autoridade));
       } catch (err) {
         console.log('error');
         console.log(err.detail);
       }
-      console.timeEnd('a');
     }
-    console.log('Commit Result');
     await Promise.all(promises);
-    console.log('END');
+    console.timeEnd('Pushing to database...');
+    console.log('END!');
   }
 }
