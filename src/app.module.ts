@@ -13,6 +13,9 @@ import { Infracao } from './entities/infracao.entity';
 import { Acidente } from './entities/acidente.entity';
 import { ConfigModule } from '@nestjs/config';
 import { AutoridadeEnvolvidaService } from './services/autoridade-envolvida.service';
+import { MiscService } from './services/misc.service';
+import { VeiculoService } from './services/veiculo.service';
+import { EnvolvidoService } from './services/envolvido.service';
 
 @Module({
   imports: [
@@ -54,6 +57,12 @@ import { AutoridadeEnvolvidaService } from './services/autoridade-envolvida.serv
     ]),
   ],
   controllers: [AppController],
-  providers: [AppService, AutoridadeEnvolvidaService],
+  providers: [
+    AppService,
+    AutoridadeEnvolvidaService,
+    MiscService,
+    VeiculoService,
+    EnvolvidoService,
+  ],
 })
 export class AppModule {}

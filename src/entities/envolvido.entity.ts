@@ -1,9 +1,15 @@
-import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  Column,
+  Entity,
+  OneToMany,
+  PrimaryColumn,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
 import { Participa } from './participa.entity';
 
 @Entity({ name: 'envolvido', synchronize: false })
 export class Envolvido {
-  @PrimaryGeneratedColumn('increment', { name: 'id_envolvido' })
+  @PrimaryColumn({ name: 'id_envolvido', type: 'int4' })
   id: number;
 
   @Column({ type: 'varchar', length: 255, name: 'tipo' })
