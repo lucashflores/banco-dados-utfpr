@@ -16,6 +16,7 @@ import { AutoridadeEnvolvidaService } from './services/autoridade-envolvida.serv
 import { MiscService } from './services/misc.service';
 import { VeiculoService } from './services/veiculo.service';
 import { EnvolvidoService } from './services/envolvido.service';
+import { RodoviaService } from './services/rodovia.service';
 
 @Module({
   imports: [
@@ -63,6 +64,7 @@ import { EnvolvidoService } from './services/envolvido.service';
     MiscService,
     VeiculoService,
     EnvolvidoService,
+    RodoviaService,
   ],
 })
 export class AppModule {}

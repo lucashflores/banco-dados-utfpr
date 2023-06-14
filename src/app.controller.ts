@@ -4,6 +4,7 @@ import { AutoridadeEnvolvidaService } from './services/autoridade-envolvida.serv
 import { MiscService } from './services/misc.service';
 import { VeiculoService } from './services/veiculo.service';
 import { EnvolvidoService } from './services/envolvido.service';
+import { RodoviaService } from './services/rodovia.service';
 
 @Controller()
 export class AppController {
@@ -17,6 +18,8 @@ export class AppController {
     private readonly veiculoService: VeiculoService,
     @Inject(EnvolvidoService)
     private readonly envolvidoService: EnvolvidoService,
+    @Inject(RodoviaService)
+    private readonly rodoviaService: RodoviaService,
   ) {}
 
   @Get()
@@ -45,6 +48,18 @@ export class AppController {
 
   @Post('/envolvido')
   runEnvolvidoScript() {
+    const success = false;
+    this.envolvidoService.runScript();
+    return success;
+  }
+
+  @Post('/rodovia')
+  runRodoviaScript() {
+    this.rodoviaService.runScript();
+  }
+
+  @Post('/test')
+  runTestScript() {
     const success = false;
     this.envolvidoService.runScript();
     return success;
