@@ -27,7 +27,12 @@ export class RodoviaService {
 
   async runScript() {
     const hashMap = {};
+    console.time('#### Finished Acidentes ###');
+    await this.runScriptAcidente(hashMap);
+    console.timeEnd('#### Finished Acidentes ###');
+    console.time('#### Finished Infrações ###');
     await this.runScriptInfracoes(hashMap);
+    console.timeEnd('#### Finished Infrações ###');
   }
 
   async runScriptInfracoes(hashMap) {
@@ -40,12 +45,10 @@ export class RodoviaService {
       const fileData = this.readFromCsv(fileName).slice(1);
       const rodovias = fileData
         .map((row) => {
-          const rowData = row.split(';');
+          const rowData = row.split(';').map((prop) => prop.replace(/"/g, ''));
           try {
             if (rowData[0] === '' || rowData[7] === 'NA' || rowData[8] === 'NA')
               return null;
-            console.log(rowData[7]);
-            console.log(+rowData[7]);
             const rodovia: Partial<Rodovia> = {
               uf: rowData[6],
               br: +rowData[7],
@@ -94,10 +97,9 @@ export class RodoviaService {
     console.log('END!');
   }
 
-  async runScriptAcidente() {
+  async runScriptAcidente(hashMap) {
     console.time('Removing repeated...');
     const fileData = this.readFromCsv('acidentes.tsv').slice(1);
-    const hashMap = {};
     const rodovias = fileData
       .map((row) => {
         const rowData = row.split('\t');

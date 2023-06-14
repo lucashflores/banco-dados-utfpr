@@ -5,6 +5,7 @@ import { MiscService } from './services/misc.service';
 import { VeiculoService } from './services/veiculo.service';
 import { EnvolvidoService } from './services/envolvido.service';
 import { RodoviaService } from './services/rodovia.service';
+import { AcidenteService } from './services/acidente.service';
 
 @Controller()
 export class AppController {
@@ -20,6 +21,8 @@ export class AppController {
     private readonly envolvidoService: EnvolvidoService,
     @Inject(RodoviaService)
     private readonly rodoviaService: RodoviaService,
+    @Inject(AcidenteService)
+    private readonly adicenteService: AcidenteService,
   ) {}
 
   @Get()
@@ -56,6 +59,11 @@ export class AppController {
   @Post('/rodovia')
   runRodoviaScript() {
     this.rodoviaService.runScript();
+  }
+
+  @Post('/acidente')
+  runAcidenteScript() {
+    this.adicenteService.runScript();
   }
 
   @Post('/test')

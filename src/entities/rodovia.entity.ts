@@ -3,6 +3,7 @@ import {
   Entity,
   OneToMany,
   OneToOne,
+  PrimaryColumn,
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { Acidente } from './acidente.entity';
@@ -10,8 +11,8 @@ import { Infracao } from './infracao.entity';
 
 @Entity({ name: 'rodovia' })
 export class Rodovia {
-  @PrimaryGeneratedColumn('uuid', { name: 'id_rodovia' })
-  id: string;
+  @PrimaryColumn({ name: 'id_rodovia' })
+  id: number;
 
   @Column({ name: 'uf', type: 'varchar', length: 255 })
   uf: string;
