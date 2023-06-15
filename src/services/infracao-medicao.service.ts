@@ -23,8 +23,8 @@ export class InfracaoMedicaoService {
       await this.infracaoRepo.insert(infracoes);
     } catch (error) {
       console.log('##### failed infracoes! #####');
-      console.log(infracoes);
-      console.log(error);
+      // console.log(infracoes);
+      // console.log(error);
     }
   }
 
@@ -39,7 +39,7 @@ export class InfracaoMedicaoService {
   }
 
   readFromCsv() {
-    const file = fs.readFileSync('src/data/infraçoes2021_01.csv', 'latin1');
+    const file = fs.readFileSync('src/data/infraçoes2021_02.csv', 'latin1');
     const allFileData = file.split('\n');
     return allFileData;
   }
@@ -59,6 +59,7 @@ export class InfracaoMedicaoService {
     let tempInfracao = [];
     let tempMedicao = [];
     let j = 0;
+    const ids = [];
     for (const row of fileData) {
       if (j % 1000 === 0) console.log(j);
       j++;
@@ -66,11 +67,6 @@ export class InfracaoMedicaoService {
       const dataInversa = rowData[1];
       const horario = rowData[18];
       const timestamp = new Date(`${dataInversa} ${horario}:00:00`);
-      if (!timestamp) {
-        console.log(dataInversa);
-        console.log(horario);
-        console.log(timestamp);
-      }
       const rodovia = {
         uf: rowData[6],
         br: +rowData[7],
@@ -105,57 +101,71 @@ export class InfracaoMedicaoService {
         valor: +rowData[19]?.replace(',', '.'),
         excesso: +rowData[20]?.replace(',', '.'),
       };
-      tempInfracao.push(JSON.stringify(infracao));
-      tempMedicao.push(JSON.stringify(medicao));
+      if (!ids.includes(infracao.id)) {
+        tempInfracao.push(JSON.stringify(infracao));
+        tempMedicao.push(JSON.stringify(medicao));
+      }
+      ids.push(infracao.id);
     }
-    const infracoes: Partial<Infracao>[] = [...new Set(tempInfracao)].map(
-      (infracao) => JSON.parse(infracao),
-    );
-    const medicoes: Partial<Medicao>[] = [...new Set(tempMedicao)].map(
-      (medicao) => JSON.parse(medicao),
-    );
+    const infracoes: Partial<Infracao>[] = [...new Set(tempInfracao)]
+      .map((infracao) => JSON.parse(infracao))
+      .filter((infracao) => infracao?.id);
+    const medicoes: Partial<Medicao>[] = [...new Set(tempMedicao)]
+      .map((medicao) => JSON.parse(medicao))
+      .filter((medicao) => medicao?.numAuto);
     console.timeEnd('Removing repeated...');
-    const infracoesFilePath = 'src/data/infracoes_data.csv';
-    const medicoesFilePath = 'src/data/medicoes_data.csv';
-    fs.appendFileSync(
-      infracoesFilePath,
-      'num_auto;codg_infracao;timestamp;marca;descricao;data_de_vigencia;enquadramento;id_rodovia\n',
-    );
-    fs.appendFileSync(medicoesFilePath, 'num_auto;tipo;valor;excesso\n');
+    // const infracoesFilePath = 'src/data/infracoes_data.csv';
+    // const medicoesFilePath = 'src/data/medicoes_data.csv';
+    // fs.appendFileSync(
+    // infracoesFilePath,
+    // 'num_auto;codg_infracao;timestamp;marca;descricao;data_de_vigencia;enquadramento;id_rodovia\n',
+    // );
+    // fs.appendFileSync(medicoesFilePath, 'num_auto;tipo;valor;excesso\n');
     const medicoesPromises = [];
+    const infracoesPromises = [];
     console.time('Pushing to database...');
     let infracoesData = [];
     let medicoesData = [];
-    let i = 0;
+    let i = 1;
     for (const infracao of infracoes) {
-      fs.appendFileSync(
-        infracoesFilePath,
-        [
-          infracao.id,
-          infracao.codgInfracao,
-          infracao.timestamp,
-          infracao.marca,
-          infracao.descricao,
-          infracao.dataDeVigencia,
-          infracao.enquadramento,
-          infracao.idRodovia,
-        ].join(';') + '\n',
-      );
+      infracoesData.push(infracao);
+      if (i % 1000 == 0) {
+        infracoesPromises.push(this.insertInfracaoData(infracoesData));
+        infracoesData = [];
+      }
+      // fs.appendFileSync(
+      //   infracoesFilePath,
+      //   [
+      //     infracao.id,
+      //     infracao.codgInfracao,
+      //     infracao.timestamp,
+      //     infracao.marca,
+      //     infracao.descricao,
+      //     infracao.dataDeVigencia,
+      //     infracao.enquadramento,
+      //     infracao.idRodovia,
+      //   ].join(';') + '\n',
+      // );
       i += 1;
     }
-    // infracoesPromises.push(this.insertInfracaoData(infracoesData));
-    // await Promise.all(infracoesPromises);
-    // i = 0;
+    infracoesPromises.push(this.insertInfracaoData(infracoesData));
+    await Promise.all(infracoesPromises);
+    i = 1;
     for (const medicao of medicoes) {
-      fs.appendFileSync(
-        medicoesFilePath,
-        [medicao.numAuto, medicao.tipo, medicao.valor, medicao.excesso].join(
-          ';',
-        ) + '\n',
-      );
+      medicoesData.push(medicao);
+      if (i % 1000 == 0) {
+        medicoesPromises.push(this.insertMedicaoData(medicoesData));
+        medicoesData = [];
+      }
+      // fs.appendFileSync(
+      //   medicoesFilePath,
+      //   [medicao.numAuto, medicao.tipo, medicao.valor, medicao.excesso].join(
+      //     ';',
+      //   ) + '\n',
+      // );
     }
-    // medicoesPromises.push(this.insertInfracaoData(medicoesData));
-    // await Promise.all(medicoesPromises);
+    medicoesPromises.push(this.insertMedicaoData(medicoesData));
+    await Promise.all(medicoesPromises);
     console.timeEnd('Pushing to database...');
     console.log('END!');
   }
