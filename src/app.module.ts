@@ -19,6 +19,7 @@ import { EnvolvidoService } from './services/envolvido.service';
 import { RodoviaService } from './services/rodovia.service';
 import { AcidenteService } from './services/acidente.service';
 import { PossuiParticipaService } from './services/participa_possui.service';
+import { InfracaoMedicaoService } from './services/infracao-medicao.service';
 
 @Module({
   imports: [
@@ -69,6 +70,7 @@ import { PossuiParticipaService } from './services/participa_possui.service';
     RodoviaService,
     AcidenteService,
     PossuiParticipaService,
+    InfracaoMedicaoService,
   ],
 })
 export class AppModule {}

@@ -68,9 +68,9 @@ export class PossuiParticipaService {
   }
 
   async runScript() {
-    // console.log('Started!');
+    console.log('Started!');
     console.time('Removing repeated...');
-    const fileData = this.readFromCsv().slice(1, 100);
+    const fileData = this.readFromCsv().slice(1);
     // const veiculoData = await this.getVeiculoData();
     // const envolvidoData = await this.getEnvolvidoData();
     const acidenteData = await this.getAcidenteData();
@@ -79,7 +79,7 @@ export class PossuiParticipaService {
     let j = 0;
     for (const row of fileData) {
       if (j % 1000 === 0) {
-        // console.log(j);
+        console.log(j);
       }
       j++;
       const rowData = row.split('\t');
@@ -138,12 +138,12 @@ export class PossuiParticipaService {
         (possuiVeiculoObj.idVeiculo || possuiVeiculoObj.idVeiculo === 0)
       );
     });
-    const participas = [...new Set(tempParticipa)].map((participa) =>
-      JSON.parse(participa),
+    const participas: Partial<Participa>[] = [...new Set(tempParticipa)].map(
+      (participa) => JSON.parse(participa),
     );
-    const possuis = [...new Set(tempPossuiVeiculo)].map((possui) =>
-      JSON.parse(possui),
-    );
+    const possuis: Partial<PossuiVeiculo>[] = [
+      ...new Set(tempPossuiVeiculo),
+    ].map((possui) => JSON.parse(possui));
     console.timeEnd('Removing repeated...');
     const promisesPossuiVeiculo = [];
     const promisesParticipa = [];
@@ -151,30 +151,34 @@ export class PossuiParticipaService {
     let participaData = [];
     let possuiVeiculoData = [];
     let i = 0;
-    // console.log(tempParticipa);
-    // console.log(tempPossuiVeiculo);
-    // console.log(participas);
-    // console.log(possuis);
+    const possuiFilePath = 'src/data/possui.csv';
+    const participaFilePath = 'src/data/participa.csv';
+    fs.appendFileSync(participaFilePath, 'id_acidente;id_envolvido\n');
+    fs.appendFileSync(possuiFilePath, 'id_acidente;id_veiculo\n');
     for (const participa of participas) {
-      //   if (participa.idAcidente === 108119) console.log(participa);
-      participaData.push(participa);
-      //   console.log(participa);
-      if (i % 1000 == 0) {
-        promisesParticipa.push(this.insertParticipaData(participaData));
-        participaData = [];
-      }
-      i += 1;
+      fs.appendFileSync(
+        participaFilePath,
+        [participa.idAcidente, participa.idEnvolvido].join(';') + '\n',
+      );
+      // participaData.push(participa);
+      // if (i % 1000 == 0) {
+      //   promisesParticipa.push(this.insertParticipaData(participaData));
+      //   participaData = [];
+      // }
+      // i += 1;
     }
     i = 0;
     for (const possui of possuis) {
-      //   if (possui.idAcidente === 108119) console.log(possui);
-      possuiVeiculoData.push(possui);
-      //   console.log(possui);
-      if (i % 1000 == 0) {
-        promisesPossuiVeiculo.push(this.insertPossuiData(possuiVeiculoData));
-        possuiVeiculoData = [];
-      }
-      i += 1;
+      fs.appendFileSync(
+        possuiFilePath,
+        [possui.idAcidente, possui.idVeiculo].join(';') + '\n',
+      );
+      // possuiVeiculoData.push(possui);
+      // if (i % 1000 == 0) {
+      //   promisesPossuiVeiculo.push(this.insertPossuiData(possuiVeiculoData));
+      //   possuiVeiculoData = [];
+      // }
+      // i += 1;
     }
     promisesPossuiVeiculo.push(this.insertParticipaData(possuiVeiculoData));
     promisesParticipa.push(this.insertPossuiData(participaData));

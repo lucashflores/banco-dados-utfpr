@@ -12,8 +12,8 @@ export class Medicao {
   @Column({ type: 'float' })
   valor: number;
 
-  @Column({ type: 'boolean' })
-  excesso: boolean;
+  @Column({ type: 'float' })
+  excesso: number;
 
   @OneToOne((type) => Infracao, (infracao) => infracao.medicao)
   @JoinColumn({ name: 'num_auto' })
