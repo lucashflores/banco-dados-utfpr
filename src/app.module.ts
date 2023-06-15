@@ -18,6 +18,7 @@ import { VeiculoService } from './services/veiculo.service';
 import { EnvolvidoService } from './services/envolvido.service';
 import { RodoviaService } from './services/rodovia.service';
 import { AcidenteService } from './services/acidente.service';
+import { PossuiParticipaService } from './services/participa_possui.service';
 
 @Module({
   imports: [
@@ -67,6 +68,7 @@ import { AcidenteService } from './services/acidente.service';
     EnvolvidoService,
     RodoviaService,
     AcidenteService,
+    PossuiParticipaService,
   ],
 })
 export class AppModule {}

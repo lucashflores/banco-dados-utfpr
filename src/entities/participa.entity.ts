@@ -11,11 +11,11 @@ import { Envolvido } from './envolvido.entity';
 
 @Entity({ name: 'participa', synchronize: false })
 export class Participa {
-  @PrimaryColumn('uuid', { name: 'id_acidente' })
-  idAcidente: string;
+  @PrimaryColumn({ name: 'id_acidente', type: 'int4' })
+  idAcidente: number;
 
-  @PrimaryColumn('uuid', { name: 'id_envolvido' })
-  idEnvolvido: string;
+  @PrimaryColumn({ name: 'id_envolvido', type: 'int4' })
+  idEnvolvido: number;
 
   @ManyToOne((type) => Acidente, (acidente) => acidente.envolvidos)
   @JoinColumn({ name: 'id_acidente' })

@@ -21,6 +21,6 @@ export class Veiculo {
   @Column({ name: 'ano_fabricacao', type: 'int' })
   anoFabricacao: number;
 
-  @OneToMany((type) => PossuiVeiculo, (possuiVeiculo) => possuiVeiculo.veiculo)
-  acidentes: PossuiVeiculo[];
+  // @OneToMany((type) => PossuiVeiculo, (possuiVeiculo) => possuiVeiculo.veiculo)
+  // acidentes: PossuiVeiculo[];
 }

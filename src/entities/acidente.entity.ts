@@ -63,8 +63,8 @@ export class Acidente {
   @JoinColumn({ name: 'id_autoridade' })
   autoridade: AutoridadeEnvolvida;
 
-  @OneToMany((type) => PossuiVeiculo, (possuiVeiculo) => possuiVeiculo.acidente)
-  veiculos: PossuiVeiculo[];
+  // @OneToMany((type) => PossuiVeiculo, (possuiVeiculo) => possuiVeiculo.acidente)
+  // veiculos: PossuiVeiculo[];
 
   @OneToMany((type) => Participa, (participa) => participa.acidente)
   envolvidos: Participa[];

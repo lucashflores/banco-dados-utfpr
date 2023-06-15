@@ -4,17 +4,17 @@ import { Veiculo } from './veiculo.entity';
 
 @Entity({ name: 'possui_veiculo', synchronize: false })
 export class PossuiVeiculo {
-  @PrimaryColumn('uuid', { name: 'id_acidente' })
-  idAcidente: string;
+  @PrimaryColumn({ name: 'id_acidente', type: 'int4' })
+  idAcidente: number;
 
-  @PrimaryColumn('uuid', { name: 'id_veiculo' })
-  idVeiculo: string;
+  @PrimaryColumn({ name: 'id_veiculo', type: 'int4' })
+  idVeiculo: number;
 
-  @ManyToOne((type) => Acidente, (acidente) => acidente.veiculos)
-  @JoinColumn({ name: 'id_acidente' })
-  acidente: Acidente;
+  // @ManyToOne((type) => Acidente, (acidente) => acidente.veiculos)
+  // @JoinColumn({ name: 'id_acidente' })
+  // acidente: Acidente;
 
-  @ManyToOne((type) => Veiculo, (veiculo) => veiculo.acidentes)
-  @JoinColumn({ name: 'id_acidente' })
-  veiculo: Veiculo;
+  // @ManyToOne((type) => Veiculo, (veiculo) => veiculo.acidentes)
+  // @JoinColumn({ name: 'id_veiculo' })
+  // veiculo: Veiculo;
 }

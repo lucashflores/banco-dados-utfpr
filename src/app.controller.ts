@@ -6,6 +6,7 @@ import { VeiculoService } from './services/veiculo.service';
 import { EnvolvidoService } from './services/envolvido.service';
 import { RodoviaService } from './services/rodovia.service';
 import { AcidenteService } from './services/acidente.service';
+import { PossuiParticipaService } from './services/participa_possui.service';
 
 @Controller()
 export class AppController {
@@ -23,6 +24,8 @@ export class AppController {
     private readonly rodoviaService: RodoviaService,
     @Inject(AcidenteService)
     private readonly adicenteService: AcidenteService,
+    @Inject(PossuiParticipaService)
+    private readonly possuiParticipaService: PossuiParticipaService,
   ) {}
 
   @Get()
@@ -64,6 +67,11 @@ export class AppController {
   @Post('/acidente')
   runAcidenteScript() {
     this.adicenteService.runScript();
+  }
+
+  @Post('/possuis-participas')
+  runParticipaScript() {
+    this.possuiParticipaService.runScript();
   }
 
   @Post('/test')

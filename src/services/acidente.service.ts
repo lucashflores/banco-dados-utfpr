@@ -4,6 +4,7 @@ import { Repository } from 'typeorm';
 import * as fs from 'fs';
 import { Acidente } from 'src/entities/acidente.entity';
 import { Rodovia } from 'src/entities/rodovia.entity';
+import { AutoridadeEnvolvida } from 'src/entities/autoridade_envolvida.entity';
 
 @Injectable()
 export class AcidenteService {
@@ -12,6 +13,8 @@ export class AcidenteService {
     readonly acidenteRepo: Repository<Acidente>,
     @InjectRepository(Rodovia)
     readonly rodoviaRepo: Repository<Rodovia>,
+    @InjectRepository(AutoridadeEnvolvida)
+    readonly autoridadeEnvolvidaRepo: Repository<AutoridadeEnvolvida>,
   ) {}
 
   async insertData(acidentes: Partial<Acidente>[]) {
@@ -54,10 +57,16 @@ export class AcidenteService {
     return rodoviaArr;
   }
 
+  async getAutoridadeEnvolvidaData() {
+    let autoridadeEnvolvidaArr: AutoridadeEnvolvida[];
+    autoridadeEnvolvidaArr = await this.autoridadeEnvolvidaRepo.find();
+    return autoridadeEnvolvidaArr;
+  }
+
   async runScript() {
     console.time('Getting rodoviaData...');
     const rodoviaData = await this.getRodoviaData();
-    console.log(rodoviaData);
+    const autoridadeEnvolvidaData = await this.getAutoridadeEnvolvidaData();
     console.timeEnd('Getting rodoviaData...');
     console.time('Removing repeated...');
     const fileData = this.readFromCsv().slice(1);
@@ -80,13 +89,27 @@ export class AcidenteService {
         sentido: rowData[13] == 'Decrescente' ? 'D' : 'Crescente' ? 'C' : null,
       };
       //   const rodoviaId = await this.searchRodoviaId(rodovia);
-      const rodoviaId = rodoviaData.find((rodoviaArg) => {
-        rodoviaArg.br === rodovia.br &&
+      const rodoviaId = rodoviaData.find(
+        (rodoviaArg) =>
+          rodoviaArg.br === rodovia.br &&
           rodoviaArg.km === rodovia.km &&
           rodoviaArg.uf === rodovia.uf &&
           rodoviaArg.municipio === rodovia.municipio &&
-          rodoviaArg.sentido === rodovia.sentido;
-      })?.id;
+          rodoviaArg.sentido === rodovia.sentido,
+      )?.id;
+
+      const autoridadeEnvolvidaProps = rowData.slice(-3);
+      const autoridadeEnvolvida: Partial<AutoridadeEnvolvida> = {
+        regional: autoridadeEnvolvidaProps[0],
+        delegacia: autoridadeEnvolvidaProps[1],
+        uop: autoridadeEnvolvidaProps[2].replace('\r', ''),
+      };
+      const autoridadeId = autoridadeEnvolvidaData.find(
+        (autoridadeEnvolvidaArg) =>
+          autoridadeEnvolvidaArg.regional === autoridadeEnvolvida.regional &&
+          autoridadeEnvolvidaArg.delegacia === autoridadeEnvolvida.delegacia &&
+          autoridadeEnvolvidaArg.uop === autoridadeEnvolvida.uop,
+      )?.id;
       const acidente: Partial<Acidente> = {
         // id: +rowData[0],
         causa: rowData[9],
@@ -100,6 +123,7 @@ export class AcidenteService {
         morte: +rowData[29] == 1,
         timestamp,
         rodoviaId,
+        autoridadeId,
       };
       temp.push(JSON.stringify(acidente));
     }
